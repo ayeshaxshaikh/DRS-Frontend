@@ -1,3 +1,4 @@
+
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -16,29 +17,42 @@ let interval;
 let isTimerRunning = false;
 
 const startTimer = () => {
-  if (isTimerRunning) return;
+  if (isTimerRunning) return; 
 
-  isTimerRunning = true;
+  isTimerRunning = true; 
   interval = setInterval(() => {
     if (drsTime > 0) {
-      drsTime--;
+      drsTime--; 
     } else {
-      clearInterval(interval);  
-      isTimerRunning = false;   
-      drsTime = 15;             
+      clearInterval(interval); 
+      isTimerRunning = false; 
+      drsTime = 15; 
+      io.emit('timerFinished');
     }
-    io.emit('timerUpdate', drsTime);  
+    io.emit('timerUpdate', drsTime); 
   }, 1000);
+};
+
+const resetTimer = () => {
+  clearInterval(interval); 
+  drsTime = 15; 
+  isTimerRunning = false; 
+  io.emit('timerUpdate', drsTime);
 };
 
 io.on('connection', (socket) => {
   console.log('A user connected');
   
-  socket.emit('timerUpdate', drsTime);  
+  socket.emit('timerUpdate', drsTime); 
 
   socket.on('startTimer', () => {
     console.log('Start timer requested');
-    startTimer();  
+    startTimer(); 
+  });
+
+  socket.on('resetTimer', () => {
+    console.log('Reset timer requested');
+    resetTimer(); 
   });
 
   socket.on('disconnect', () => {
