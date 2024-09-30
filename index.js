@@ -53,6 +53,7 @@ io.on('connection', (socket) => {
   socket.on('resetTimer', () => {
     console.log('Reset timer requested');
     resetTimer(); 
+    io.emit('timerReset');
   });
 
   socket.on('disconnect', () => {
